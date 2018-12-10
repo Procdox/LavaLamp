@@ -1,12 +1,19 @@
+'use strict';
+//Lava Lamp SVG element
+//Copyright Andrew Blackledge 2018 
+//via https://github.com/Procedurally-Unorthodox/LavaLamp
+
 var marching_hash = [[],[[0,.5,.5,1]],[[.5,1,1,.5]],[[0,.5,1,.5]],
 	[[1,.5,.5,0]],[[0,.5,.5,0],[1,.5,.5,1]],[[.5,1,.5,0]],[[0,.5,.5,0]],
 	[[.5,0,0,.5]],[[.5,0,.5,1]],[[.5,0,1,.5],[.5,1,0,.5]],[[.5,0,1,.5]],
 	[[1,.5,0,.5]],[[1,.5,.5,1]],[[.5,1,0,.5]],[]];
+
+//takes in a set of 2-dimensional points (ignores extra dimensions)
+//generates a set of marching squares segments
+//links segments into border
+//returns simplified border
 function generate_marching_border(grid, threshold){
-	//takes in a set of 2-dimensional points (ignores extra dimensions)
-	//generates a set of marching squares segments
-	//links segments into border
-	//returns simplified border
+	
   width = grid.x - 1;
   height = grid.y - 1
 
@@ -29,10 +36,7 @@ function generate_marching_border(grid, threshold){
 				segment[2]+=xx;
 				segment[3]+=yy;
 				ref.push(segment);
-
-				//segments.push(segment);
 			}
-			//grid_vectors[xx][yy] = marching_vectors[score];
 			if(score%15!=0){
 				segments.push([xx,yy]);
 			}
@@ -106,7 +110,6 @@ function generate_marching_border(grid, threshold){
 	}
 	return paths;
 }
-
 
 function paths2string (paths, scale_x, scale_y) {
   var svgpath = "", i, j;
@@ -230,7 +233,11 @@ class effect{
 		this.iterate();
 	}
 	iterate(){
-    this.resize()
+		if(this.state == effect_state.DOOMED){
+			this.target[0].innerHTML = '<div></div>';
+			return;
+		}
+		this.resize()
 
 		var svg = '<svg width="'+this.svg_x+'" height="'+this.svg_y+'" id="board">';
 
@@ -289,6 +296,8 @@ class effect{
 	}
 	clear(){
 		this.state = effect_state.DOOMED;
-
+		this.iterate();
 	}
 }
+
+module.exports = effect
