@@ -14,8 +14,8 @@ var marching_hash = [[],[[0,.5,.5,1]],[[.5,1,1,.5]],[[0,.5,1,.5]],
 //returns simplified border
 function generate_marching_border(grid, threshold){
 	
-  width = grid.x - 1;
-  height = grid.y - 1
+  var width = grid.x - 1;
+  var height = grid.y - 1
 
 	var segments = [];
 	var segment,score;
@@ -134,7 +134,6 @@ function clamp(current,min,max){
 const effect_state = {
 	STOPPED : 0,
 	RUNNING : 1,
-	DOOMED : 2
 }
 
 class grid{
@@ -227,16 +226,16 @@ class effect{
 		this.state = effect_state.STOPPED;
 
 		this.elapsed_time = 0
+
+		this.timer = 0
 	}
 	start(){
-		this.state = effect_state.RUNNING;
-		this.iterate();
+		if(this.state != effect_state.RUNNING){
+			this.state = effect_state.RUNNING;
+			this.timer = setInterval(this.iterate.bind(this), 30);
+		}
 	}
 	iterate(){
-		if(this.state == effect_state.DOOMED){
-			this.target[0].innerHTML = '<div></div>';
-			return;
-		}
 		this.resize()
 
 		var svg = '<svg width="'+this.svg_x+'" height="'+this.svg_y+'" id="board">';
@@ -270,15 +269,12 @@ class effect{
 		this.target[0].innerHTML = svg;
 
 		this.elapsed_time+=.01;
-
-		if(this.state == effect_state.RUNNING){
-			setTimeout(this.iterate.bind(this),30);
-		}else if(this.state == effect_state.DOOMED){
-			this.target[0].innerHTML = '<div></div>';
-		}
 	}
 	stop(){
-		this.state = effect_state.STOPPED;
+		if(this.state == effect_state.RUNNING){
+			clearInterval(this.timer);
+			this.state = effect_state.STOPPED;
+		}
 	}
 	resize(){
     var possible_x = Math.floor(this.target.width()*this.display_x)/this.display_x;
@@ -295,9 +291,8 @@ class effect{
       this.svg_y * this.display_y+1)
 	}
 	clear(){
-		this.state = effect_state.DOOMED;
-		this.iterate();
+		this.stop();
+		this.target[0].innerHTML = '<div></div>';
+		this.target.css("background-color",'');
 	}
 }
-
-module.exports = effect
