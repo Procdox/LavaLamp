@@ -41,6 +41,12 @@ manager.clear()
 ```
 stop will pause the animation, clear will empty the div as well.
 
+You can also force the effect to adjust to a change in the div's size, via the resize command
+```
+manager.resize()
+```
+The code will not automatically detect changes to the div, you must detect this yourself.
+
 Have fun!
 MIT License included.
 Copyright Andrew Blackledge 2018
